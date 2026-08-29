@@ -103,16 +103,6 @@ enum L10nKeys {
     static let usageCaveat = "usage.caveat"
     static let usageRefreshHelp = "usage.refresh.help"
 
-    static let dashboardDeleteTitle = "dashboard.delete.title"
-    static let dashboardDeleteCancel = "dashboard.delete.cancel"
-    static let dashboardDeleteConfirm = "dashboard.delete.confirm"
-    static let dashboardDeleteMessage = "dashboard.delete.message"
-    static let dashboardDeleteUsageNotScanned = "dashboard.delete.usage.notScanned"
-    static let dashboardDeleteUsageScanning = "dashboard.delete.usage.scanning"
-    static let dashboardDeleteUsageUnknown = "dashboard.delete.usage.unknown"
-    static let dashboardDeleteUsageDetected = "dashboard.delete.usage.detected"
-    static let dashboardDeleteUsageNotDetected = "dashboard.delete.usage.notDetected"
-
     static let allKeys: [String] = [
         appName,
         settingsTabGeneral,
@@ -198,14 +188,5 @@ enum L10nKeys {
         usageSourceCodex,
         usageCaveat,
         usageRefreshHelp,
-        dashboardDeleteTitle,
-        dashboardDeleteCancel,
-        dashboardDeleteConfirm,
-        dashboardDeleteMessage,
-        dashboardDeleteUsageNotScanned,
-        dashboardDeleteUsageScanning,
-        dashboardDeleteUsageUnknown,
-        dashboardDeleteUsageDetected,
-        dashboardDeleteUsageNotDetected,
     ]
 }

@@ -104,13 +104,3 @@
 "usage.source.codex" = "本地 Codex 历史记录";
 "usage.caveat" = "仅供参考：缺失的日志、其他 Agent 以及项目引用均未计入。";
 "usage.refresh.help" = "重新扫描 Codex 使用记录";
-
-"dashboard.delete.title" = "删除 Skill";
-"dashboard.delete.cancel" = "取消";
-"dashboard.delete.confirm" = "删除";
-"dashboard.delete.message" = "确定删除“%@”吗？这会移除 Skill 目录及所有符号链接，且无法撤销。";
-"dashboard.delete.usage.notScanned" = "尚未扫描 Codex 使用记录。如需参考使用情况判断删除风险，请先在该 Skill 的详情页扫描历史。";
-"dashboard.delete.usage.scanning" = "仍在扫描 Codex 使用记录，目前无法判断删除风险。";
-"dashboard.delete.usage.unknown" = "Codex 历史记录不可用，无法判断此前是否使用，也无法评估删除风险。";
-"dashboard.delete.usage.detected" = "Codex 历史中检测到 %d 次使用，最近一次为 %@。删除前请确认已不再需要。";
-"dashboard.delete.usage.notDetected" = "现有 Codex 历史中未检测到使用，但这不代表一定可以安全删除；其他 Agent 或项目仍可能引用它。";

@@ -104,8 +104,8 @@ final class SkillManager {
 
     /// Best-effort Codex invocation evidence, indexed by `Skill.id`.
     ///
-    /// Keeping the index in the shared manager lets the detail page and delete confirmation reuse
-    /// one history scan instead of performing duplicate filesystem work.
+    /// Keeping the index in the shared manager lets skill detail pages reuse one history scan
+    /// instead of performing duplicate filesystem work.
     var codexSkillUsageRecords: [String: SkillUsageRecord] = [:]
 
     /// Current coverage state for Codex's local history scan.
