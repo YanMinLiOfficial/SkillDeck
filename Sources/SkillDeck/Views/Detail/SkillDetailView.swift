@@ -14,6 +14,7 @@ struct SkillDetailView: View {
     @Bindable var viewModel: SkillDetailViewModel
     @Environment(SkillManager.self) private var skillManager
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
 
     @AppStorage(LanguageSettings.appLanguageKey) private var appLanguageRaw: String = LanguageSettings.defaultLanguage.rawValue
 
@@ -39,6 +40,12 @@ struct SkillDetailView: View {
                     } else {
                         linkToRepoSection(skill)
                     }
+
+                    Divider()
+
+                    // Best-effort historical usage recovered from local Codex session logs.
+                    // Keep this above the long Agent list so first-time users can discover it.
+                    usageSection(skill)
 
                     Divider()
 
@@ -195,6 +202,97 @@ struct SkillDetailView: View {
         }
     }
 
+    /// Codex usage evidence section.
+    ///
+    /// The UI says "detected" rather than "total" because local history may be incomplete. This
+    /// distinction is important for deletion safety: zero matches is useful evidence, but it is not
+    /// proof that the skill is unreferenced by another Agent or project configuration.
+    private func usageSection(_ skill: Skill) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                LText(key: L10nKeys.usageSectionTitle)
+                    .appFont(.headline)
+
+                Spacer()
+
+                if skillManager.codexSkillUsageScanState == .notScanned {
+                    Button(localized(L10nKeys.usageScanAction)) {
+                        Task { await skillManager.loadCodexSkillUsage() }
+                    }
+                    .controlSize(.small)
+                } else if skillManager.codexSkillUsageScanState != .scanning {
+                    Button {
+                        Task { await skillManager.loadCodexSkillUsage(forceRefresh: true) }
+                    } label: {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                    }
+                    .controlSize(.small)
+                    .help(localized(L10nKeys.usageRefreshHelp))
+                }
+            }
+
+            switch skillManager.codexSkillUsageScanState {
+            case .notScanned:
+                Label(localized(L10nKeys.usageNotScanned), systemImage: "clock.arrow.circlepath")
+                    .appFont(.subheadline)
+                    .foregroundStyle(.secondary)
+
+            case .scanning:
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                    LText(key: L10nKeys.usageScanning)
+                        .appFont(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+            case .unavailable:
+                Label(localized(L10nKeys.usageUnavailable), systemImage: "questionmark.circle")
+                    .appFont(.subheadline)
+                    .foregroundStyle(.secondary)
+
+            case .available:
+                if let record = skillManager.codexSkillUsage(for: skill.id) {
+                    Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
+                        GridRow {
+                            LText(key: L10nKeys.usageDetectedCalls)
+                                .foregroundStyle(.secondary)
+                            Text(record.detectedInvocationCount.formatted())
+                        }
+
+                        GridRow {
+                            LText(key: L10nKeys.usageLastUsed)
+                                .foregroundStyle(.secondary)
+                            if let lastDetectedAt = record.lastDetectedAt {
+                                Text(lastDetectedAt.formatted(
+                                    Date.FormatStyle(date: .abbreviated, time: .shortened)
+                                        .locale(locale)
+                                ))
+                            } else {
+                                Text("—")
+                            }
+                        }
+
+                        GridRow {
+                            LText(key: L10nKeys.usageSource)
+                                .foregroundStyle(.secondary)
+                            LText(key: L10nKeys.usageSourceCodex)
+                        }
+                    }
+                    .appFont(.subheadline)
+                } else {
+                    Label(localized(L10nKeys.usageNeverDetected), systemImage: "clock.badge.questionmark")
+                        .appFont(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                LText(key: L10nKeys.usageCaveat)
+                    .appFont(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
     /// Markdown body section
     @ViewBuilder
     private func markdownSection(_ skill: Skill) -> some View {
@@ -216,6 +314,11 @@ struct SkillDetailView: View {
                     .cornerRadius(8)
             }
         }
+    }
+
+    /// Short alias that keeps localized call sites readable inside deeply nested ViewBuilders.
+    private func localized(_ key: String) -> String {
+        L10n.string(key, bundle: localizationBundle, locale: locale)
     }
 
     /// Manual repository linking section — displayed when skill has no lockEntry

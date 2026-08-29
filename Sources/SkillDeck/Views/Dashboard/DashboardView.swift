@@ -131,16 +131,16 @@ struct DashboardView: View {
         }
         // Delete confirmation dialog
         // .alert similar to Android's AlertDialog or Web's confirm()
-        .alert("Delete Skill", isPresented: $viewModel.showDeleteConfirmation) {
-            Button("Cancel", role: .cancel) {
+        .alert(localized(L10nKeys.dashboardDeleteTitle), isPresented: $viewModel.showDeleteConfirmation) {
+            Button(localized(L10nKeys.dashboardDeleteCancel), role: .cancel) {
                 viewModel.cancelDelete()
             }
-            Button("Delete", role: .destructive) {
+            Button(localized(L10nKeys.dashboardDeleteConfirm), role: .destructive) {
                 Task { await viewModel.confirmDelete() }
             }
         } message: {
             if let skill = viewModel.skillToDelete {
-                Text("Are you sure you want to delete \"\(skill.displayName)\"? This will remove the skill directory and all symlinks. This action cannot be undone.")
+                Text(deleteConfirmationMessage(for: skill))
             }
         }
         // Error message
@@ -179,5 +179,49 @@ struct DashboardView: View {
         case .simplifiedChinese:
             return "中"
         }
+    }
+
+    /// Build deletion guidance from the best usage evidence currently available.
+    ///
+    /// A zero count never says "safe" because Codex history can be incomplete and SkillDeck does
+    /// not yet inspect references from other Agents or project-level instruction files.
+    private func deleteConfirmationMessage(for skill: Skill) -> String {
+        let base = String(
+            format: localized(L10nKeys.dashboardDeleteMessage),
+            skill.displayName
+        )
+
+        let usageMessage: String
+        switch skillManager.codexSkillUsageScanState {
+        case .notScanned:
+            usageMessage = localized(L10nKeys.dashboardDeleteUsageNotScanned)
+
+        case .scanning:
+            usageMessage = localized(L10nKeys.dashboardDeleteUsageScanning)
+
+        case .unavailable:
+            usageMessage = localized(L10nKeys.dashboardDeleteUsageUnknown)
+
+        case .available:
+            if let record = skillManager.codexSkillUsage(for: skill.id) {
+                let lastUsed = record.lastDetectedAt?.formatted(
+                    Date.FormatStyle(date: .abbreviated, time: .shortened)
+                        .locale(locale)
+                ) ?? "—"
+                usageMessage = String(
+                    format: localized(L10nKeys.dashboardDeleteUsageDetected),
+                    record.detectedInvocationCount,
+                    lastUsed
+                )
+            } else {
+                usageMessage = localized(L10nKeys.dashboardDeleteUsageNotDetected)
+            }
+        }
+
+        return "\(base)\n\n\(usageMessage)"
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, bundle: localizationBundle, locale: locale)
     }
 }

@@ -102,6 +102,15 @@ final class SkillManager {
     /// so the UI can still generate GitHub compare URLs after a refresh.
     private var cachedRemoteCommitHashes: [String: String] = [:]
 
+    /// Best-effort Codex invocation evidence, indexed by `Skill.id`.
+    ///
+    /// Keeping the index in the shared manager lets the detail page and delete confirmation reuse
+    /// one history scan instead of performing duplicate filesystem work.
+    var codexSkillUsageRecords: [String: SkillUsageRecord] = [:]
+
+    /// Current coverage state for Codex's local history scan.
+    var codexSkillUsageScanState: SkillUsageScanState = .notScanned
+
     // MARK: - App Update State (application self-update status)
 
     /// Latest release info (nil means no update available or not yet checked)
@@ -135,6 +144,9 @@ final class SkillManager {
     /// Stored in ~/.agents/.skilldeck-cache.json, doesn't pollute npx skills' lock file format
     private let commitHashCache = CommitHashCache()
 
+    /// Agent-specific adapter for reconstructing historical Codex skill invocations.
+    private let codexSkillUsageService: CodexSkillUsageService
+
     private let translationService = TranslationService()
 
     private static let dontShowTranslationPackPromptKey = "translationPackPromptDontShowAgain"
@@ -152,8 +164,38 @@ final class SkillManager {
 
     // MARK: - Initialization
 
-    init() {
+    init(codexSkillUsageService: CodexSkillUsageService = CodexSkillUsageService()) {
+        self.codexSkillUsageService = codexSkillUsageService
         setupFileWatcher()
+    }
+
+    /// Load the Codex usage index once, or rebuild it when the user explicitly refreshes.
+    ///
+    /// The service actor performs file I/O away from the main actor. Only the small final result is
+    /// assigned back to observable UI state on the main actor.
+    func loadCodexSkillUsage(forceRefresh: Bool = false) async {
+        if codexSkillUsageScanState == .scanning {
+            return
+        }
+
+        if !forceRefresh, case .available = codexSkillUsageScanState {
+            return
+        }
+
+        codexSkillUsageScanState = .scanning
+        let result = await codexSkillUsageService.scan()
+        codexSkillUsageRecords = result.records
+
+        if result.scannedLogCount > 0 {
+            codexSkillUsageScanState = .available(scannedLogCount: result.scannedLogCount)
+        } else {
+            codexSkillUsageScanState = .unavailable
+        }
+    }
+
+    /// Return usage evidence for one skill after the shared index has been loaded.
+    func codexSkillUsage(for skillID: String) -> SkillUsageRecord? {
+        codexSkillUsageRecords[skillID]
     }
 
     /// Translate a short English paragraph into Simplified Chinese (zh-CN).

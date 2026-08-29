@@ -91,3 +91,26 @@
 
 "dashboard.language.menuLabel" = "Language";
 "dashboard.language.menuHelp" = "Switch app language";
+
+"usage.section.title" = "Usage (Codex)";
+"usage.scan.action" = "Scan History";
+"usage.notScanned" = "Usage history has not been scanned on this device";
+"usage.scanning" = "Scanning local Codex history...";
+"usage.detectedCalls" = "Detected uses";
+"usage.lastUsed" = "Last detected";
+"usage.neverDetected" = "No usage was detected in available Codex history";
+"usage.unavailable" = "Codex history is unavailable; previous usage is unknown";
+"usage.source" = "Source";
+"usage.source.codex" = "Local Codex history";
+"usage.caveat" = "Best-effort evidence only. Missing logs, other Agents, and project references are not included.";
+"usage.refresh.help" = "Rescan Codex usage history";
+
+"dashboard.delete.title" = "Delete Skill";
+"dashboard.delete.cancel" = "Cancel";
+"dashboard.delete.confirm" = "Delete";
+"dashboard.delete.message" = "Are you sure you want to delete \"%@\"? This removes the skill directory and all symlinks and cannot be undone.";
+"dashboard.delete.usage.notScanned" = "Codex usage history has not been scanned. Open this skill's detail page and scan history before using usage as deletion evidence.";
+"dashboard.delete.usage.scanning" = "Codex usage history is still being scanned; deletion safety cannot be assessed yet.";
+"dashboard.delete.usage.unknown" = "Codex usage history is unavailable, so previous usage is unknown. Deletion safety cannot be assessed.";
+"dashboard.delete.usage.detected" = "Codex history contains %d detected use(s), most recently %@. Confirm the skill is no longer needed before deleting it.";
+"dashboard.delete.usage.notDetected" = "No usage was detected in available Codex history, but this does not prove the skill is safe to delete; other Agents or projects may still reference it.";
