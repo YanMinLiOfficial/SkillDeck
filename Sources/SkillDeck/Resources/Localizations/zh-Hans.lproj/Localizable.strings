@@ -92,7 +92,7 @@
 "dashboard.language.menuLabel" = "语言";
 "dashboard.language.menuHelp" = "切换应用语言";
 
-"usage.section.title" = "使用情况（Codex）";
+"usage.section.title" = "使用情况";
 "usage.scan.action" = "扫描历史";
 "usage.notScanned" = "尚未在此设备上扫描使用记录";
 "usage.scanning" = "正在扫描本地 Codex 历史记录…";

@@ -202,16 +202,24 @@ struct SkillDetailView: View {
         }
     }
 
-    /// Codex usage evidence section.
+    /// Usage evidence grouped by Agent. Codex is the first supported provider.
     ///
     /// The UI says "detected" rather than "total" because local history may be incomplete. This
     /// distinction is important for deletion safety: zero matches is useful evidence, but it is not
     /// proof that the skill is unreferenced by another Agent or project configuration.
     private func usageSection(_ skill: Skill) -> some View {
         VStack(alignment: .leading, spacing: 8) {
+            LText(key: L10nKeys.usageSectionTitle)
+                .appFont(.headline)
+
             HStack {
-                LText(key: L10nKeys.usageSectionTitle)
-                    .appFont(.headline)
+                Image(systemName: AgentType.codex.iconName)
+                    .foregroundStyle(Constants.AgentColors.color(for: .codex))
+                    .frame(width: 20)
+
+                Text(AgentType.codex.displayName)
+                    .appFont(.subheadline)
+                    .fontWeight(.semibold)
 
                 Spacer()
 
@@ -231,65 +239,68 @@ struct SkillDetailView: View {
                 }
             }
 
-            switch skillManager.codexSkillUsageScanState {
-            case .notScanned:
-                Label(localized(L10nKeys.usageNotScanned), systemImage: "clock.arrow.circlepath")
-                    .appFont(.subheadline)
-                    .foregroundStyle(.secondary)
-
-            case .scanning:
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-                    LText(key: L10nKeys.usageScanning)
+            Group {
+                switch skillManager.codexSkillUsageScanState {
+                case .notScanned:
+                    Label(localized(L10nKeys.usageNotScanned), systemImage: "clock.arrow.circlepath")
                         .appFont(.subheadline)
                         .foregroundStyle(.secondary)
-                }
 
-            case .unavailable:
-                Label(localized(L10nKeys.usageUnavailable), systemImage: "questionmark.circle")
-                    .appFont(.subheadline)
-                    .foregroundStyle(.secondary)
+                case .scanning:
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        LText(key: L10nKeys.usageScanning)
+                            .appFont(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
 
-            case .available:
-                if let record = skillManager.codexSkillUsage(for: skill.id) {
-                    Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
-                        GridRow {
-                            LText(key: L10nKeys.usageDetectedCalls)
-                                .foregroundStyle(.secondary)
-                            Text(record.detectedInvocationCount.formatted())
-                        }
+                case .unavailable:
+                    Label(localized(L10nKeys.usageUnavailable), systemImage: "questionmark.circle")
+                        .appFont(.subheadline)
+                        .foregroundStyle(.secondary)
 
-                        GridRow {
-                            LText(key: L10nKeys.usageLastUsed)
-                                .foregroundStyle(.secondary)
-                            if let lastDetectedAt = record.lastDetectedAt {
-                                Text(lastDetectedAt.formatted(
-                                    Date.FormatStyle(date: .abbreviated, time: .shortened)
-                                        .locale(locale)
-                                ))
-                            } else {
-                                Text("—")
+                case .available:
+                    if let record = skillManager.codexSkillUsage(for: skill.id) {
+                        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
+                            GridRow {
+                                LText(key: L10nKeys.usageDetectedCalls)
+                                    .foregroundStyle(.secondary)
+                                Text(record.detectedInvocationCount.formatted())
+                            }
+
+                            GridRow {
+                                LText(key: L10nKeys.usageLastUsed)
+                                    .foregroundStyle(.secondary)
+                                if let lastDetectedAt = record.lastDetectedAt {
+                                    Text(lastDetectedAt.formatted(
+                                        Date.FormatStyle(date: .abbreviated, time: .shortened)
+                                            .locale(locale)
+                                    ))
+                                } else {
+                                    Text("—")
+                                }
+                            }
+
+                            GridRow {
+                                LText(key: L10nKeys.usageSource)
+                                    .foregroundStyle(.secondary)
+                                LText(key: L10nKeys.usageSourceCodex)
                             }
                         }
-
-                        GridRow {
-                            LText(key: L10nKeys.usageSource)
-                                .foregroundStyle(.secondary)
-                            LText(key: L10nKeys.usageSourceCodex)
-                        }
-                    }
-                    .appFont(.subheadline)
-                } else {
-                    Label(localized(L10nKeys.usageNeverDetected), systemImage: "clock.badge.questionmark")
                         .appFont(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                    } else {
+                        Label(localized(L10nKeys.usageNeverDetected), systemImage: "clock.badge.questionmark")
+                            .appFont(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
 
-                LText(key: L10nKeys.usageCaveat)
-                    .appFont(.caption)
-                    .foregroundStyle(.tertiary)
+                    LText(key: L10nKeys.usageCaveat)
+                        .appFont(.caption)
+                        .foregroundStyle(.tertiary)
+                }
             }
+            .padding(.leading, 28)
         }
     }
 

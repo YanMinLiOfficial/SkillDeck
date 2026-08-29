@@ -92,7 +92,7 @@
 "dashboard.language.menuLabel" = "Language";
 "dashboard.language.menuHelp" = "Switch app language";
 
-"usage.section.title" = "Usage (Codex)";
+"usage.section.title" = "Usage";
 "usage.scan.action" = "Scan History";
 "usage.notScanned" = "Usage history has not been scanned on this device";
 "usage.scanning" = "Scanning local Codex history...";
