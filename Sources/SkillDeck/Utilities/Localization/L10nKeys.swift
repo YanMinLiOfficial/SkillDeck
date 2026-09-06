@@ -102,6 +102,7 @@ enum L10nKeys {
     static let usageSourceCodex = "usage.source.codex"
     static let usageCaveat = "usage.caveat"
     static let usageRefreshHelp = "usage.refresh.help"
+    static let usageIncompleteHelp = "usage.incomplete.help"
 
     static let allKeys: [String] = [
         appName,
@@ -188,5 +189,6 @@ enum L10nKeys {
         usageSourceCodex,
         usageCaveat,
         usageRefreshHelp,
+        usageIncompleteHelp,
     ]
 }

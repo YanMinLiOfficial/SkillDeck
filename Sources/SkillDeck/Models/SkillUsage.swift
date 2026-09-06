@@ -24,8 +24,8 @@ enum SkillUsageScanState: Equatable {
     /// SkillDeck is reading local history files in the background.
     case scanning
 
-    /// At least one Codex history file was readable, so a missing record means "not detected".
-    case available(scannedLogCount: Int)
+    /// At least one Codex history file is represented; failures are surfaced as incomplete coverage.
+    case available(scannedLogCount: Int, failedLogCount: Int)
 
     /// No readable Codex history files were found, so usage must be reported as unknown.
     case unavailable
@@ -36,6 +36,9 @@ struct SkillUsageScanResult: Equatable {
     /// Records are keyed by the skill directory name, which is also `Skill.id` in SkillDeck.
     let records: [String: SkillUsageRecord]
 
-    /// Number of history files successfully read during this scan.
+    /// Number of history files represented by fresh scan results or retained cache entries.
     let scannedLogCount: Int
+
+    /// Number of discovered history files that could not be read completely during this scan.
+    let failedLogCount: Int
 }

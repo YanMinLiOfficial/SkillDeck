@@ -221,6 +221,14 @@ struct SkillDetailView: View {
                     .appFont(.subheadline)
                     .fontWeight(.semibold)
 
+                if case .available(_, let failedLogCount) = skillManager.codexSkillUsageScanState,
+                   failedLogCount > 0 {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .help(localized(L10nKeys.usageIncompleteHelp))
+                        .accessibilityLabel(localized(L10nKeys.usageIncompleteHelp))
+                }
+
                 Spacer()
 
                 if skillManager.codexSkillUsageScanState == .notScanned {

@@ -104,3 +104,4 @@
 "usage.source.codex" = "Local Codex history";
 "usage.caveat" = "Best-effort evidence only. Missing logs, other Agents, and project references are not included.";
 "usage.refresh.help" = "Rescan Codex usage history";
+"usage.incomplete.help" = "Some Codex history files could not be read; usage statistics may be incomplete";

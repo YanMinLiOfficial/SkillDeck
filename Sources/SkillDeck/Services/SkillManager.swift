@@ -187,7 +187,10 @@ final class SkillManager {
         codexSkillUsageRecords = result.records
 
         if result.scannedLogCount > 0 {
-            codexSkillUsageScanState = .available(scannedLogCount: result.scannedLogCount)
+            codexSkillUsageScanState = .available(
+                scannedLogCount: result.scannedLogCount,
+                failedLogCount: result.failedLogCount
+            )
         } else {
             codexSkillUsageScanState = .unavailable
         }

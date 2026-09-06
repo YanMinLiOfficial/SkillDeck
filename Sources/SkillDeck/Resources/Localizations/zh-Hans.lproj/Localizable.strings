@@ -104,3 +104,4 @@
 "usage.source.codex" = "本地 Codex 历史记录";
 "usage.caveat" = "仅供参考：缺失的日志、其他 Agent 以及项目引用均未计入。";
 "usage.refresh.help" = "重新扫描 Codex 使用记录";
+"usage.incomplete.help" = "部分 Codex 历史记录无法读取，使用统计可能不完整";
